@@ -19,11 +19,11 @@ import javax.validation.constraints.*;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-11-17T14:24:11.401Z[GMT]")
 public class AddressBook   {
   @JsonProperty("nextId")
-  private Long nextId = null;
+  private Long nextId = new Long(1);
 
   @JsonProperty("personList")
   @Valid
-  private List<Person> personList = null;
+  private List<Person> personList = new ArrayList<Person>();
 
   public AddressBook nextId(Long nextId) {
     this.nextId = nextId;
