@@ -8,6 +8,9 @@ import org.springframework.context.annotation.ComponentScan;
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import io.swagger.model.AddressBook;
+import io.swagger.model.Person;
+
 @SpringBootApplication
 @EnableSwagger2
 @ComponentScan(basePackages = { "io.swagger", "io.swagger.api" , "io.swagger.configuration"})
@@ -21,6 +24,18 @@ public class Swagger2SpringBoot implements CommandLineRunner {
     }
 
     public static void main(String[] args) throws Exception {
+        AddressBook ab = new AddressBook();
+
+        // Some dummy data
+        Person salvador = new Person();
+        salvador.setName("Salvador");
+        salvador.setId(ab.nextId());
+        Person juan = new Person();
+        juan.setName("Juan");
+        juan.setId(ab.nextId());
+        ab.getPersonList().add(salvador);
+        ab.getPersonList().add(juan);
+
         new SpringApplication(Swagger2SpringBoot.class).run(args);
     }
 
