@@ -29,6 +29,7 @@ import javax.inject.Inject;
 @Controller
 public class ContactsApiController implements ContactsApi {
 
+    // TODO: this needs a Spring bean or something to be sent to the Spring server
     @Inject
     io.swagger.model.AddressBook addressBook;
 
