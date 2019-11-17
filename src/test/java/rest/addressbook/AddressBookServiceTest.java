@@ -265,10 +265,17 @@ public class AddressBookServiceTest {
 		ab.getPersonList().add(juan);
 		launchServer(ab);
 
+		Client client = ClientBuilder.newClient();
+
+		Response pre_response = client.target("http://localhost:8282/contacts/person/2")
+				.request(MediaType.APPLICATION_JSON).get();
+		assertEquals(200, pre_response.getStatus());
+		assertEquals(MediaType.APPLICATION_JSON_TYPE, pre_response.getMediaType());
+		Person preMariaRetrieved = pre_response.readEntity(Person.class);
+
 		// Update Maria
 		Person maria = new Person();
 		maria.setName("Maria");
-		Client client = ClientBuilder.newClient();
 		Response response = client
 				.target("http://localhost:8282/contacts/person/2")
 				.request(MediaType.APPLICATION_JSON)
@@ -295,6 +302,22 @@ public class AddressBookServiceTest {
 				.request(MediaType.APPLICATION_JSON)
 				.put(Entity.entity(maria, MediaType.APPLICATION_JSON));
 		assertEquals(400, response.getStatus());
+
+		// Check that the values of contact 2 were modified
+		assertNotEquals(preMariaRetrieved.getName(), mariaRetrieved.getName());
+		assertEquals(preMariaRetrieved.getId(), mariaRetrieved.getId());
+
+		// Check that new PUT will not modify
+		Response response2 = client
+				.target("http://localhost:8282/contacts/person/2")
+				.request(MediaType.APPLICATION_JSON)
+				.put(Entity.entity(maria, MediaType.APPLICATION_JSON));
+		assertEquals(200, response2.getStatus());
+		assertEquals(MediaType.APPLICATION_JSON_TYPE, response2.getMediaType());
+		Person mariaReUpdated = response2.readEntity(Person.class);
+		assertEquals(mariaRetrieved.getName(), mariaReUpdated.getName());
+		assertEquals(mariaRetrieved.getId(), mariaReUpdated.getId());
+		assertEquals(mariaRetrieved.getHref(), mariaReUpdated.getHref());
 
 		//////////////////////////////////////////////////////////////////////
 		// Verify that PUT /contacts/person/2 is well implemented by the service, i.e
