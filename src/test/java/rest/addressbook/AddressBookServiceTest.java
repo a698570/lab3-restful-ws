@@ -229,6 +229,20 @@ public class AddressBookServiceTest {
 		assertEquals(juan.getName(), addressBookRetrieved.getPersonList()
 				.get(1).getName());
 
+		// Ask again and assert that both responses are the same
+		Response response2 = client.target("http://localhost:8282/contacts")
+				.request().get();
+		AddressBook addressBookRetrieved2 = response2
+				.readEntity(AddressBook.class);
+		assertEquals(200, response2.getStatus());
+
+		assertEquals(addressBookRetrieved.getPersonList().size(),
+				addressBookRetrieved2.getPersonList().size());
+		assertEquals(addressBookRetrieved.getPersonList()
+				.get(1).getName(),
+				addressBookRetrieved2.getPersonList()
+						.get(1).getName());
+
 		//////////////////////////////////////////////////////////////////////
 		// Verify that GET /contacts is well implemented by the service, i.e
 		// complete the test to ensure that it is safe and idempotent
