@@ -30,6 +30,12 @@ public class AddressBook   {
     return this;
   }
 
+  public Long nextId() {
+    Long oldValue = nextId;
+    nextId++;
+    return oldValue;
+  }
+
   /**
    * Get nextId
    * @return nextId
