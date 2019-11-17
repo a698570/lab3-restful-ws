@@ -174,6 +174,29 @@ public class AddressBookServiceTest {
 		assertEquals(3, mariaUpdated.getId());
 		assertEquals(mariaURI, mariaUpdated.getHref());
 
+		// Check that the result is the same and the contact list didn't change
+		Response contacts = client.target("http://localhost:8282/contacts")
+				.request().get();
+		assertEquals(200, contacts.getStatus());
+
+		Response response2 = client.target("http://localhost:8282/contacts/person/3")
+				.request(MediaType.APPLICATION_JSON).get();
+		assertEquals(200, response.getStatus());
+		assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
+		Person mariaUpdated2 = response2.readEntity(Person.class);
+		assertEquals(mariaUpdated.getName(), mariaUpdated2.getName());
+		assertEquals(mariaUpdated.getId(), mariaUpdated2.getId());
+		assertEquals(mariaUpdated.getHref(), mariaUpdated2.getHref());
+
+		Response contacts2 = client.target("http://localhost:8282/contacts")
+				.request().get();
+		assertEquals(200, contacts2.getStatus());
+
+		assertEquals(
+				contacts.readEntity(AddressBook.class).getPersonList().size(),
+				contacts2.readEntity(AddressBook.class).getPersonList().size()
+		);
+
 		//////////////////////////////////////////////////////////////////////
 		// Verify that GET /contacts/person/3 is well implemented by the service, i.e
 		// complete the test to ensure that it is safe and idempotent
