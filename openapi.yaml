@@ -1,0 +1,150 @@
+openapi: 3.0.1
+info:
+  title: Lab 3 RESTful WS
+
+  version: 1.0.0
+
+servers:
+- url: http://localhost:8080/v2
+
+paths:
+  /contacts:
+    get:
+      summary: Get full address book
+      operationId: getAddressBook
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBook'
+    post:
+      summary: Add a new user to the Address Book
+      operationId: addPerson
+      requestBody:
+        description: Person object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+      x-codegen-request-body-name: body
+  /contacts/person/{id}:
+    get:
+      summary: Find person by ID
+      operationId: getPerson
+      parameters:
+      - name: id
+        in: path
+        description: ID of person to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        404:
+          description: Person not found
+          content: {}
+    put:
+      summary: Updated person
+      operationId: updatePerson
+      parameters:
+      - name: id
+        in: path
+        description: id of person that needs to be updated
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Updated user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+        required: true
+      responses:
+        200:
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        400:
+          description: Invalid user supplied
+          content: {}
+      x-codegen-request-body-name: body
+    delete:
+      summary: Deletes a Person
+      operationId: deletePerson
+      parameters:
+      - name: id
+        in: path
+        description: Person id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        204:
+          description: Deleted
+          content: {}
+        404:
+          description: Id not found
+          content: {}
+
+  
+components:
+  schemas:
+    PhoneNumber:
+      properties:
+        number:
+          type: string
+        type:
+          type: string
+          enum: [MOBILE, HOME, WORK]
+          
+    Person:
+      properties:
+        name:
+          type: string
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+          format: email
+        href:
+          type: string
+          format: uri
+        phoneList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        
+    AddressBook:
+      properties:
+        nextId:
+          type: integer
+          format: int64
+        personList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Person'
+
+
+
