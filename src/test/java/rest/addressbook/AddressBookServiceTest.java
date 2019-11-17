@@ -20,6 +20,7 @@ import rest.addressbook.domain.AddressBook;
 import rest.addressbook.domain.Person;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * A simple test suite.
@@ -48,6 +49,13 @@ public class AddressBookServiceTest {
 				.request().get();
 		assertEquals(200, response.getStatus());
 		assertEquals(0, response.readEntity(AddressBook.class).getPersonList()
+				.size());
+
+		// Ask again and assert that both responses are the same
+		Response response2 = client.target("http://localhost:8282/contacts")
+				.request().get();
+		assertEquals(200, response2.getStatus());
+		assertEquals(0, response2.readEntity(AddressBook.class).getPersonList()
 				.size());
 
 		//////////////////////////////////////////////////////////////////////
@@ -90,6 +98,26 @@ public class AddressBookServiceTest {
 		assertEquals(juan.getName(), juanUpdated.getName());
 		assertEquals(1, juanUpdated.getId());
 		assertEquals(juanURI, juanUpdated.getHref());
+
+		Response contacts = client.target("http://localhost:8282/contacts")
+				.request().get();
+		assertEquals(200, contacts.getStatus());
+
+		// Create another user with the same data
+		Response response2 = client.target("http://localhost:8282/contacts")
+				.request(MediaType.APPLICATION_JSON)
+				.post(Entity.entity(juan, MediaType.APPLICATION_JSON));
+		assertEquals(201, response2.getStatus());
+
+		Response contacts2 = client.target("http://localhost:8282/contacts")
+				.request().get();
+		assertEquals(200, contacts2.getStatus());
+
+		// Check that now there are more contacts than before
+		assertNotEquals(
+				contacts.readEntity(AddressBook.class).getPersonList().size(),
+				contacts2.readEntity(AddressBook.class).getPersonList().size()
+		);
 
 		//////////////////////////////////////////////////////////////////////
 		// Verify that POST /contacts is well implemented by the service, i.e
