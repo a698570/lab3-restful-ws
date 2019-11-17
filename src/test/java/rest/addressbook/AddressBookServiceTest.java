@@ -340,14 +340,31 @@ public class AddressBookServiceTest {
 		ab.getPersonList().add(juan);
 		launchServer(ab);
 
-		// Delete a user
+		// Check that user exists before
 		Client client = ClientBuilder.newClient();
+
+		Response pre_response = client.target("http://localhost:8282/contacts/person/2")
+				.request(MediaType.APPLICATION_JSON).get();
+		assertEquals(200, pre_response.getStatus());
+		assertEquals(MediaType.APPLICATION_JSON_TYPE, pre_response.getMediaType());
+
+		// Delete a user
 		Response response = client
 				.target("http://localhost:8282/contacts/person/2").request()
 				.delete();
 		assertEquals(204, response.getStatus());
 
 		// Verify that the user has been deleted
+		response = client.target("http://localhost:8282/contacts/person/2")
+				.request().delete();
+		assertEquals(404, response.getStatus());
+
+		// Delete a user again
+		response = client
+				.target("http://localhost:8282/contacts/person/2").request()
+				.delete();
+		assertEquals(404, response.getStatus());
+
 		response = client.target("http://localhost:8282/contacts/person/2")
 				.request().delete();
 		assertEquals(404, response.getStatus());
